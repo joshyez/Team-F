@@ -1,0 +1,47 @@
+---
+title: "Team F Project"
+author: "Brooke"
+date: "7/21/2020"
+output: html_document
+---
+#Uploaded files 
+```{r}
+library(readr)
+
+covid_deaths <- read.csv("Introduction to Data Science/Project/Team-F/covid_deaths_usafacts.csv")
+
+covid_cases <- read.csv("Introduction to Data Science/Project/Team-F/covid_confirmed_usafacts.csv")
+
+county_populations <- read.csv("Introduction to Data Science/Project/Team-F/covid_county_population_usafacts.csv")
+
+library(readxl)
+state_voting<- read_excel("Introduction to Data Science/Project/Team-F/2018 Voting Data Clean.xlsx")
+
+```
+
+#Create dataframe with COVID deaths by state
+```{r}
+state_deaths <- tapply(covid_deaths$X7.18.2020, covid_deaths$State, FUN=sum)
+state_deaths_df<- data.frame(state_deaths)
+state_deaths_df
+```
+
+#Create a dataframe with populations by state 
+```{r}
+state_populations <- tapply(county_populations$population, county_populations$State, FUN=sum)
+state_populations_df <- data.frame(state_populations)
+state_populations_df
+```
+
+#Create dataframe with COVID cases by state
+```{r}
+state_cases <- tapply(covid_cases$X7.18.2020, covid_cases$State, FUN=sum)
+state_cases_df<- data.frame(state_cases)
+str(state_cases_df)
+```
+
+#Merge voting, case, population and voting dataframes 
+```{r}
+
+
+```
