@@ -18,9 +18,15 @@ county_populations <- read.csv("Introduction to Data Science/Project/Team-F/covi
 county_populations<- county_populations[order(county_populations$State),]
 
 library(readxl)
+<<<<<<< Updated upstream
 state_voting <- read_excel("Introduction to Data Science/Project/Team-F/2018 Voting Data.xlsx")
 state_voting <- state_voting[order(state_voting$State), ]
+=======
+state_voting<- read_excel("Introduction to Data Science/Project/Team-F/2018 Voting Data Clean.xlsx")
+state_voting
+>>>>>>> Stashed changes
 
+state_voting$State %in% covid_deaths$State
 ```
 
 #Create dataframe with COVID deaths by state
@@ -41,11 +47,12 @@ state_populations_df
 ```{r}
 state_cases <- tapply(covid_cases$X7.18.2020, covid_cases$State, FUN=sum)
 state_cases_df<- data.frame(state_cases)
-str(state_cases_df)
+state_cases_df
 ```
 
 #Merge voting, case, population and voting dataframes 
 ```{r}
+<<<<<<< Updated upstream
 state_data <- cbind(state_populations_df, state_cases_df, state_deaths_df, state_voting$Classification)
 #Change Column Names 
 names (state_data)[1]<- "Population"
@@ -55,4 +62,14 @@ names (state_data)[4]<- "Party"
 #Omit DC from dataset 
 state_data <- state_data[-c(8),]
 state_data
+=======
+cbind(state_cases_df, state_deaths_df, state_voting$Classification)
+
+```
+
+#Linear Regression between states and deaths 
+```{r}
+scatter.smooth(x=)
+
+>>>>>>> Stashed changes
 ```
