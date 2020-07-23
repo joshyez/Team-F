@@ -47,5 +47,12 @@ str(state_cases_df)
 #Merge voting, case, population and voting dataframes 
 ```{r}
 state_data <- cbind(state_populations_df, state_cases_df, state_deaths_df, state_voting$Classification)
+#Change Column Names 
+names (state_data)[1]<- "Population"
+names (state_data)[2]<- "Cases"
+names (state_data)[3]<- "Deaths"
+names (state_data)[4]<- "Party"
+#Omit DC from dataset 
+state_data <- state_data[-c(8),]
 state_data
 ```
