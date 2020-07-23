@@ -9,13 +9,17 @@ output: html_document
 library(readr)
 
 covid_deaths <- read.csv("Introduction to Data Science/Project/Team-F/covid_deaths_usafacts.csv")
+covid_deaths<- covid_deaths[order(covid_deaths$State), ]
 
 covid_cases <- read.csv("Introduction to Data Science/Project/Team-F/covid_confirmed_usafacts.csv")
+covid_cases <- covid_cases[order(covid_cases$State), ]
 
 county_populations <- read.csv("Introduction to Data Science/Project/Team-F/covid_county_population_usafacts.csv")
+county_populations<- county_populations[order(county_populations$State),]
 
 library(readxl)
-state_voting<- read_excel("Introduction to Data Science/Project/Team-F/2018 Voting Data Clean.xlsx")
+state_voting <- read_excel("Introduction to Data Science/Project/Team-F/2018 Voting Data.xlsx")
+state_voting <- state_voting[order(state_voting$State), ]
 
 ```
 
@@ -23,7 +27,7 @@ state_voting<- read_excel("Introduction to Data Science/Project/Team-F/2018 Voti
 ```{r}
 state_deaths <- tapply(covid_deaths$X7.18.2020, covid_deaths$State, FUN=sum)
 state_deaths_df<- data.frame(state_deaths)
-state_deaths_df
+state_cases_df
 ```
 
 #Create a dataframe with populations by state 
@@ -42,6 +46,6 @@ str(state_cases_df)
 
 #Merge voting, case, population and voting dataframes 
 ```{r}
-
+cbind(state_populations_df, state_cases_df, state_deaths_df, state_voting$Classification)
 
 ```
