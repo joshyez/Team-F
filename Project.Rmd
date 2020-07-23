@@ -46,6 +46,6 @@ str(state_cases_df)
 
 #Merge voting, case, population and voting dataframes 
 ```{r}
-cbind(state_populations_df, state_cases_df, state_deaths_df, state_voting$Classification)
-
+state_data <- cbind(state_populations_df, state_cases_df, state_deaths_df, state_voting$Classification)
+state_data
 ```
