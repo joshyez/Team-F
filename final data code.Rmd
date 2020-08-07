@@ -1,0 +1,64 @@
+---
+title: "Untitled"
+author: "Ngodoo Zume"
+date: "7/26/2020"
+output: html_document
+---
+
+```{r}
+library(readxl)
+state_data <- read_excel("state_data.xlsx") #already incudes everything below
+
+pop <- data.frame(read.csv("covid_county_population_usafacts.csv"))
+
+pop <- aggregate(pop$population, by=list(state=pop$State), FUN=sum, na.rm=TRUE)
+names(pop)[2] <- "state_pop"
+
+
+#combine with state data by state
+state_data <- merge(state_data, pop, by = "state", all.x = TRUE)
+
+#all NA in pct_chng column = 0 
+state_data$pct_change[is.na(state_data$pct_change)] <- 0
+
+#shorten percentage to 2 decimal places
+state_data[,'pct_change'] <- format(round(state_data[,'pct_change'],2),nsmall=2)
+
+
+voting_data <- read_excel("2018 Voting Data.xlsx")
+names(voting_data)
+state_data <- merge(state_data, voting_data, by = "state", all.x = TRUE)
+
+write_xlsx(state_data, "state_data.xlsx")
+```
+
+```{r}
+sum <- state_data[c(-1, -2, -3, -10)]
+by(sum, sum$party, summary)
+```
+```{r}
+#s <- y
+#by(s, y$party, summary)
+
+ag <- aggregate(. ~ party, y, function(x) c(sd = sd(x)))
+ag
+```
+
+
+```{r}
+library(writexl)
+write_xlsx(y, "y.xlsx")
+write_xlsx(party_data, "party_data.xlsx")
+```
+```{r}
+a <- log(y$avg_change)
+hist(a)
+```
+```{r}
+library(ggplot2)
+ggplot(data=state_data, aes(x=reorder(state, -state_pop), y=state_pop, fill=party)) + ggtitle("state population") +
+  xlab("State") + ylab("population") +
+  geom_bar(stat="identity") + scale_fill_manual(values = c("blue", "red")) + theme(axis.text.x=element_text(angle=90, hjust=1), plot.title = element_text(hjust = 0.5,  size=14, face="bold"))
+```
+
+
