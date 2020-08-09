@@ -1,0 +1,100 @@
+---
+title: "DS Final Paper"
+author: "Ngodoo Zume"
+date: "8/9/2020"
+output: 
+  html_document:
+    code_folding: hide
+    # number_sections: true
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+```{r basicfunct, include=FALSE}
+loadPkg = function(x) { if (!require(x,character.only=T, quietly =T)) { install.packages(x,dep=T,repos="http://cran.us.r-project.org"); if(!require(x,character.only=T)) stop("Package not found") } }
+```
+
+
+```{r}
+loadPkg("ggplot2") 
+state_data <- read.csv("state_data.csv")
+data_by_state <- read.csv("data_by_state.csv")
+```
+
+```{r}
+names(data_by_state)[1] <- "State"
+names(data_by_state)[3] <- "Party"
+names(data_by_state)[2] <- "Avg_change"
+```
+
+# Analysis
+
+## Two-Sample T-Test
+
+*In this section, the focus will be on the relationship between political party affiliation and the average change in Covid-19 cases, from May 1, 2020 to July 18, 2020.  The average change in cases is per 1,000 people to better visualize how the number of cases has changed over time and to make the states more comparable. Figures 1 and 2 below will be used to visually evaluate the data for potential relationships or patterns between the average change in cases and political party affiliation.*
+
+```{r, echo=FALSE}
+ggplot(data_by_state, aes(x=Party, y=Avg_change, fill = Party, na.action())) + 
+  geom_boxplot() + scale_fill_manual(values = c("blue", "red")) +labs(title="Plot of Avg change in Cases \n by Party",
+        x ="Political Party", y = "Avg Change in Covid-19 Cases (per 1,000)") + theme( plot.title = element_text(hjust = 0.5,  size=14, face="bold")) 
+```
+
+*Figure 1: Boxplot of the average change in cases by party* 
+
+*The boxplot in figure 1, shows that republican states have experienced a greater increase in Covid-19 cases than democratic states, on average. It is important to note that the variation in republican states is also greater. Not only is the mean higher for this group, but it also appears to have more states that have experienced a greater increase in cases. This is most likely what is causing the larger variation.*
+
+```{r, echo=FALSE}
+ggplot(data=data_by_state, aes(x=reorder(State, -Avg_change), y=Avg_change, fill=Party)) + ggtitle("Avg Change in Covid-19 Cases \n by State and Political Affiliation") +
+  xlab("State") + ylab("Avg Change in Cases (per 1,000)") +
+  geom_bar(stat="identity") + scale_fill_manual(values = c("blue", "red")) + theme(axis.text.x=element_text(angle=90, hjust=1), plot.title = element_text(hjust = 0.5,  size=14, face="bold"))
+
+```
+
+*Figure 2: Bar graph of the average change in cases by state and political affiliation*
+
+*Figure 2 serves as a visualization of the growth in cases, across all states. The graph is in descending order, to better focus on those with the highest rates. The two states to have experienced the largest average surge in Covid-19 cases are republican states – Arizona and Florida. When we focus on the 10 states with the highest average growth in cases, it is evident that the majority are republican states.  From the ten, Nevada is the only democratic state.* 
+
+*To test if the mean difference in average change in cases between the two parties is statistically zero, the Welch two-sample t-test will be used. This specific test is being used because the two samples do not have the same sample size and it is more robust to the equal variance assumption than the student t-test. If the variances were equal, it would still give us the same result as a student t-test.*
+
+*The null hypothesis is that there is no difference between the two means and the alternative hypothesis is that democratic states have a lower average change in number of cases than republican states.*  
+
+$H_o: μ_d= μ_r$
+
+$H_a: μ_d< μ_r$
+
+*With this approach, there are two preliminary tests used to check the test’s assumptions: independence and normality.*
+1.Independence:
+Each state can only be affiliated with one political party. Therefore, the two samples from democratic and republican states are independent.
+
+2.Normality:
+
+```{r, echo=FALSE}
+qqnorm(data_by_state$Avg_change)
+```
+
+*Figure 3: Normal Q-Q Plot*
+*From the visual check in Figure 3, the QQ-plot appears to be normal. Now, the Shapiro-Wilke test will be used to confirm:*
+
+```{r, echo=FALSE}
+with(data_by_state, shapiro.test(Avg_change[Party == "rep"]))# p = 0.8837
+with(data_by_state, shapiro.test(Avg_change[Party == "dem"])) # p = 0.9927
+
+```
+
+*Figure 4: Shapiro-Wilk Normality Test*
+
+*The p-value > 0.05 for both groups, so we fail to reject the null hypothesis that the sample belongs to a normal distribution. Hence, we can conclude that both distributions are normal.*
+*As a result of all the necessary assumptions being met, the use of the Welch two-sample t-test has been justified and we can continue with the analysis.*
+
+```{r, echo=FALSE}
+results <- t.test(Avg_change~Party, data = data_by_state, alternative = "less")
+results
+```
+
+*Figure 5: Welch Two Sample T-Test (One Sided Test))*
+
+*After conducting the t-test, the results show that the p-value = 0.059, which is greater than 0.05. This implies the failure to reject the null hypothesis that the means are equal. Therefore, we can conclude that between May 1, 2020 and July 18, 2020, the average change in Covid-19 cases was not significantly higher for republican states, compared to democratic states.*
+
