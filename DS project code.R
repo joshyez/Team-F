@@ -70,7 +70,22 @@ results
 
 ##Code for Brooke's Analysis
 
+#Scatterplot with regression lines
+ggplot(data_by_state_clean, aes(x=Cases.per.thou, y=Deaths.per.thou, color=Party))+ geom_point()+labs(title="Scatterplot", subtitle = "Deaths vs Cases", x= "Cases (per 1,000)", y= "Deaths (per 1,000)") +geom_smooth(method = "lm" )+ scale_color_manual(values=c("red", "blue"))+ xlim(c(0,850))+ ylim(c(0,50))
 
+#Correlation 
+cor.test(rep_data1$Cases.per.thou, rep_data1$Deaths.per.thou, method = "pearson", conf.level = 0.95)
+cor.test(dem_data1$Cases.per.thou, dem_data1$Deaths.per.thou, method = "pearson", conf.level = 0.95)
+
+#Linear Model
+rep_lm <- glm(formula= Cases.per.thou~Deaths.per.thou, data=rep_data1)
+summary(rep_lm)
+dem_lm <- glm(formula= Cases.per.thou~Deaths.per.thou , data=dem_data1)
+summary(dem_lm)
+
+# Confidence Interval 
+confint(rep_lm)
+confint(dem_lm)
 
 
 
