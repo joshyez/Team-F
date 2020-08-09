@@ -1,6 +1,6 @@
 ---
-title: "Untitled"
-author: "Ngodoo Zume"
+title: "Summary Paper"
+author: "Team F"
 date: "8/9/2020"
 output:
 html_document:
@@ -23,7 +23,12 @@ unloadPkg = function(pkg, character.only = FALSE) {
 }
 ```
 ```{r}
-loadPkg("ggplot2") 
+loadPkg("tidyr")
+loadPkg("usmap")
+loadPkg("readr")
+loadPkg("ggplot2")
+loadPkg("dplyr")
+loadPkg("scales")
 state_data <- read.csv("state_data.csv")
 data_by_state <- read.csv("data_by_state.csv")
 ```
@@ -54,14 +59,8 @@ This report is organized as follows:
 
 ##2.3 Geographical Description of the Data 
 
-The graph below shows an overall trend of confirmed covid-19 cases and deaths from 05/01/2020 to 07/18/2020 in the US. The top of each vertical line represents the highest number of cases or deaths in a state at the time period. We can see the daily confirmed cases and deaths are increasing continuously. And from another graph we can see tests and recoveries are increasing obviously.
+*The graph below shows an overall trend of confirmed covid-19 cases and deaths from 05/01/2020 to 07/18/2020 in the US. The top of each vertical line represents the highest number of cases or deaths in a state at the time period. We can see the daily confirmed cases and deaths are increasing continuously. And from another graph we can see tests and recoveries are increasing obviously.*
 ```{r,echo=FALSE,message = FALSE}
-loadPkg("tidyr")
-loadPkg("usmap")
-loadPkg("readr")
-loadPkg("ggplot2")
-loadPkg("dplyr")
-loadPkg("scales")
 covid=read.csv("state_data_add.csv")
 str(covid)
 ks=function (x) { number_format(accuracy = 1,
@@ -88,7 +87,7 @@ ggplot(dfa, aes(x = date, y = value)) +
 ```
 
 
-The graph of "confirmed cases in the US until 07/18/2020" shows that New York, California, Florida, and Texas are the top four states that have the most positive cases. New York has passed 400k confirmed Covid-19 cases until 07/18/2020. California, Florida, and Texas are between 300k to 400k cases. Other states are below 200k. 
+*The graph of "confirmed cases in the US until 07/18/2020" shows that New York, California, Florida, and Texas are the top four states that have the most positive cases. New York has passed 400k confirmed Covid-19 cases until 07/18/2020. California, Florida, and Texas are between 300k to 400k cases. Other states are below 200k.* 
 ```{r,,results='markup',warning=FALSE}
 covid_cum=subset(covid,date=="7/18/20")
 ggplot(covid_cum,aes(x=state,y=cases,color=state))+geom_point()+ggtitle("Confirmed Coronavirus Cases until 07/18/2020 in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
@@ -99,7 +98,7 @@ plot_usmap(data = covid_cum, labels=TRUE, values = "cases", color = "red") +
 ```
 
 
-The graph of "deaths in the US until 07/18/2020" shows that New York has most deaths.  More than 30k people are dead in New York and around 15k people are dead in New Jersey until 07/18/2020. Other states are below 10k. But this only can represent the result in this time period, New York has more people infected earlier, so they may have more people dead earlier. 
+*The graph of "deaths in the US until 07/18/2020" shows that New York has most deaths.  More than 30k people are dead in New York and around 15k people are dead in New Jersey until 07/18/2020. Other states are below 10k. But this only can represent the result in this time period, New York has more people infected earlier, so they may have more people dead earlier.*
 ```{r,results='markup',warning=FALSE}
 ggplot(covid_cum,aes(x=state,y=deaths,color=state))+geom_point()+ggtitle("Deaths from Coronavirus until 07/18/2020 in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
 plot_usmap(data = covid_cum, labels=TRUE, values = "deaths", color = "red") +
@@ -109,7 +108,7 @@ plot_usmap(data = covid_cum, labels=TRUE, values = "deaths", color = "red") +
 ```
 
 
-The heat map of the US population shows that California, Texas, Florida, and New York are the four states that have the most population. They are also the four states that have the most confirmed cases. 
+*The heat map of the US population shows that California, Texas, Florida, and New York are the four states that have the most population. They are also the four states that have the most confirmed cases.*
 ```{r,echo=FALSE,warning=FALSE}
 ggplot(covid_cum,aes(x=state,y=population,color=state))+geom_point()+ggtitle("Population of each state in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
 plot_usmap(data=covid_cum, labels=TRUE, values="population",color="green")+
@@ -119,13 +118,13 @@ plot_usmap(data=covid_cum, labels=TRUE, values="population",color="green")+
 ```
 
 
-The heat map below shows the parties of each state based on the 2018 data. We can see that two of the states that have the most confirmed cases and most population, which is New York and California, are demoncratic states. And two of the states that have the most confirmed cases and most populated, which is Florida and Texas, are republican states. So we will have some analysis based on these four states.
+*The heat map below shows the parties of each state based on the 2018 data. We can see that two of the states that have the most confirmed cases and most population, which is New York and California, are demoncratic states. And two of the states that have the most confirmed cases and most populated, which is Florida and Texas, are republican states. So we will have some analysis based on these four states.*
 ```{r,echo=FALSE,warning=FALSE}
 plot_usmap(data=covid, labels=TRUE, values="party",color="red")
 ```
 
 
-The graph of the number of tests shows that California has more than 6 million tests until 7/18/2020 and New York has around 5 million tests. The republican states, Florida and Texas, are below them and have around 3 million tests. Until 7/18, the two republican states have tests much below the two democratic states, they may have more tests in the future, but they have much more people who have not tested until 7/18. 
+*The graph of the number of tests shows that California has more than 6 million tests until 7/18/2020 and New York has around 5 million tests. The republican states, Florida and Texas, are below them and have around 3 million tests. Until 7/18, the two republican states have tests much below the two democratic states, they may have more tests in the future, but they have much more people who have not tested until 7/18.* 
 ```{r,results='markup',warning=FALSE}
 ggplot(covid_cum,aes(x=state,y=tests,color=state))+geom_point()+ggtitle("Number of tests of each state in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
 plot_usmap(data=covid_cum, labels=TRUE, values="tests",color="orange")+
@@ -135,7 +134,7 @@ plot_usmap(data=covid_cum, labels=TRUE, values="tests",color="orange")+
 ```
 
 
-The graph of cumulative hospitalization until 7/18 shows that New York is the state that has the most people hospitalized. Because California and Texas are missing data, I will compare the two states that have the most confirmed cases, New York and Florida. Whereas democratic state New York has more than 75k people are hospitalized, republican state Florida has below 25k people are hospitalized.  
+*graph of cumulative hospitalization until 7/18 shows that New York is the state that has the most people hospitalized. Because California and Texas are missing data, I will compare the two states that have the most confirmed cases, New York and Florida. Whereas democratic state New York has more than 75k people are hospitalized, republican state Florida has below 25k people are hospitalized.*  
 ```{r,results='markup',warning=FALSE}
 ggplot(covid_cum,aes(x=state,y=hospitalized,color=state))+geom_point()+ggtitle("Hospitalization in each states")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
 ```
@@ -145,7 +144,7 @@ ggplot(covid_cum,aes(x=state,y=hospitalized,color=state))+geom_point()+ggtitle("
 
 ##3.1 Plot Analysis
 
-In order to better compare the two republican states and democratic states, the line plots below are generated. We can see the lines of confirmed cases in Republican states Florida and Texas are going up more sharply than democratic states New York and California. They may have more chances to increase cases greatly in the future. And although the two republican states have the number of tests much lower than the two democratic states, they don’t show a sign that they will have many more people get tested in the future. 
+*In order to better compare the two republican states and democratic states, the line plots below are generated. We can see the lines of confirmed cases in Republican states Florida and Texas are going up more sharply than democratic states New York and California. They may have more chances to increase cases greatly in the future. And although the two republican states have the number of tests much lower than the two democratic states, they don’t show a sign that they will have many more people get tested in the future.* 
 
 ```{r,results='markup',warning=FALSE}
 covidny=subset(covid,state=="NY")
@@ -195,7 +194,7 @@ ggplot(df4, aes(x = date, y = value)) +
 ```
 
 
-The data in the four states may not be enough to show that some democratic states are doing better than republican states. Since demoncratic states New Jersey and Illinois are the fifth and sixth states that have the most confirmed cases, republican states Georgia and Arizona are the seventh and eighth states that have the most cases, we picked these four states to generate another analysis. The lines of confirmed cases in the demoncratic states New Jersey and Illinois are much more stable than republican states Georgia and Arizona. Georgia and Arizona are more possible to increase confirmed cases largely in the future. And Georgia and Arizona are also  conducted tests lower than New Jersey and Illinois. Moreover, New Jersey has more people hospitalized than Georgia and Arizona. By comparing the eight states, we can see some demoncratic states control the increasing cases better than some republican states.
+*The data in the four states may not be enough to show that some democratic states are doing better than republican states. Since demoncratic states New Jersey and Illinois are the fifth and sixth states that have the most confirmed cases, republican states Georgia and Arizona are the seventh and eighth states that have the most cases, we picked these four states to generate another analysis. The lines of confirmed cases in the demoncratic states New Jersey and Illinois are much more stable than republican states Georgia and Arizona. Georgia and Arizona are more possible to increase confirmed cases largely in the future. And Georgia and Arizona are also  conducted tests lower than New Jersey and Illinois. Moreover, New Jersey has more people hospitalized than Georgia and Arizona. By comparing the eight states, we can see some demoncratic states control the increasing cases better than some republican states.*
 ```{r,results='markup',warning=FALSE}
 covidil=subset(covid,state=="IL")
 df5=covidil %>%
@@ -329,7 +328,7 @@ library(ggplot2)
 ggplot(data_by_state_clean, aes(x=Cases.per.thou, y=Deaths.per.thou, color=Party))+ geom_point()+labs(title="Scatterplot", subtitle = "Deaths vs Cases", x= "Cases (per 1,000)", y= "Deaths (per 1,000)") +geom_smooth(method = "lm" )+ scale_color_manual(values=c("red", "blue"))+ xlim(c(0,850))+ ylim(c(0,50))
 
 ```
-Next, we wanted to look at the relationship between COVID related deaths and the number of cases. More specifically, do deaths trend with cases and what does that trend look like for each party? In this section we are factoring in population by the thousands and have removed outliers to decrease variability and increase statistical power. To analyze this relationship, we created a scatterplot formatted with a line of best fit. The line of best fit follows the equation ŷ = bX + a, where b is the slope of the line and a is the intercept, which allows us to estimate the dependent variable (deaths), given the independent variable (cases). We would assume, as a state’s number of cases  increases, so should its number of deaths, providing a positive trend, which is observed in our model. This graph shows an increased number of democratic states with higher case and death occurrences. We also see that the rate of deaths per case for both parties look similar. 
+*Next, we wanted to look at the relationship between COVID related deaths and the number of cases. More specifically, do deaths trend with cases and what does that trend look like for each party? In this section we are factoring in population by the thousands and have removed outliers to decrease variability and increase statistical power. To analyze this relationship, we created a scatterplot formatted with a line of best fit. The line of best fit follows the equation ŷ = bX + a, where b is the slope of the line and a is the intercept, which allows us to estimate the dependent variable (deaths), given the independent variable (cases). We would assume, as a state’s number of cases  increases, so should its number of deaths, providing a positive trend, which is observed in our model. This graph shows an increased number of democratic states with higher case and death occurrences. We also see that the rate of deaths per case for both parties look similar.* 
 
 ```{r}
 #Correlation
@@ -338,9 +337,9 @@ cor.test(rep_data1$Cases.per.thou, rep_data1$Deaths.per.thou, method = "pearson"
 ```{r}
 cor.test(dem_data1$Cases.per.thou, dem_data1$Deaths.per.thou, method = "pearson", conf.level = 0.95)
 ```
-To analyze the relationship between cases and deaths among both parties we completed a Pearson's correlation test, which measures the strength of a linear association between two variables, at a 95% confidence interval. When we look at the level of linear dependence between our two variables, both republicans (r=.726) and democrats (r=.966) have a strong correlation. Democrats correlation between deaths and cases is higher. 
+*To analyze the relationship between cases and deaths among both parties we completed a Pearson's correlation test, which measures the strength of a linear association between two variables, at a 95% confidence interval. When we look at the level of linear dependence between our two variables, both republicans (r=.726) and democrats (r=.966) have a strong correlation. Democrats correlation between deaths and cases is higher.* 
 
-Next, we completed a linear regression model to see if we can predict the value of an outcome (deaths) based on our predictor variable (cases). Our null hypothesis is that there is no relationship between the independent variable (deaths) and our dependent variable (cases). The alternative hypothesis is that the coefficients are not equal to zero.
+*Next, we completed a linear regression model to see if we can predict the value of an outcome (deaths) based on our predictor variable (cases). Our null hypothesis is that there is no relationship between the independent variable (deaths) and our dependent variable (cases). The alternative hypothesis is that the coefficients are not equal to zero.*
 
 ```{r}
 rep_lm <- glm(formula= Cases.per.thou~Deaths.per.thou, data=rep_data1)
@@ -350,14 +349,14 @@ summary(rep_lm)
 dem_lm <- glm(formula= Cases.per.thou~Deaths.per.thou , data=dem_data1)
 summary(dem_lm)
 ```
-Through these tests we see a statistical significance (p<.05) between these two linear models for republicans and democrats, allowing us to reject the null hypothesis that there is no relationship between cases and deaths for each party. We also see that republican (b=11.88 ) and democratic (b= 20.56) states have differing slopes, suggesting that the rate of deaths and cases for parties vary. 
+*Through these tests we see a statistical significance (p<.05) between these two linear models for republicans and democrats, allowing us to reject the null hypothesis that there is no relationship between cases and deaths for each party. We also see that republican (b=11.88 ) and democratic (b= 20.56) states have differing slopes, suggesting that the rate of deaths and cases for parties vary.* 
 ```{r}
 confint(rep_lm)
 ```
 ```{r}
 confint(dem_lm)
 ```
-To test if this difference was significant, we ran a confidence interval for each set of data (Figure 12-13). As the intervals lie just outside of each other, we can conclude with 95% confidence that the deaths and cases for each party are different. 
+*To test if this difference was significant, we ran a confidence interval for each set of data (Figure 12-13). As the intervals lie just outside of each other, we can conclude with 95% confidence that the deaths and cases for each party are different.* 
 
 ##3.4 ANOVA
 
