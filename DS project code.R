@@ -166,14 +166,170 @@ colnames(data)
                                       
                                       
 ##Code for Siyu's Analysis
+loadPkg("tidyr")
+loadPkg("usmap")
+loadPkg("readr")
+loadPkg("ggplot2")
+loadPkg("dplyr")
+loadPkg("scales")
+covid=read.csv("state_data_add.csv")
+str(covid)
+ks=function (x) { number_format(accuracy = 1,
+                                   scale = 1/1000,
+                                   suffix = "k",
+                                   big.mark = ",")(x) }
+df=covid %>%
+  select(date,cases,deaths) %>%
+  gather(key = "variable", value = "value", -date)
+df$date=as.Date(df$date,format = "%m/%d/%y")
+ggplot(df, aes(x = date, y = value)) + 
+  geom_area(aes(color = variable,fill = variable), 
+            alpha = 0.5, position = position_dodge(0.8))+ggtitle("Covid-19 data from 05/01/2020 to 07/18/2020 in US")+scale_color_manual(values = c("blue","red")) +scale_fill_manual(values = c("blue","red"))+scale_y_continuous(labels = ks)
+```
 
+```{r,results='markup'}
+dfa=covid %>%
+  select(date,cases,deaths,hospitalized,recovered,tests) %>%
+  gather(key = "variable", value = "value", -date)
+dfa$date=as.Date(dfa$date,format = "%m/%d/%y")
+ggplot(dfa, aes(x = date, y = value)) + 
+  geom_area(aes(color = variable,fill = variable), 
+            alpha = 0.5, position = position_dodge(0.8))+ggtitle("Covid-19 data from 05/01/2020 to 07/18/2020 in US")+scale_color_manual(values = c("blue","red","green","black","orange")) +scale_fill_manual(values = c("blue","red","green","black","orange"))+scale_y_continuous(labels = ks)
+```
 
+```{r,,results='markup',warning=FALSE}
+covid_cum=subset(covid,date=="7/18/20")
+ggplot(covid_cum,aes(x=state,y=cases,color=state))+geom_point()+ggtitle("Confirmed Coronavirus Cases until 07/18/2020 in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+plot_usmap(data = covid_cum, labels=TRUE, values = "cases", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Confirmed Coronavirus Cases until 07/18/2020 in US", label = scales::comma
+  ) + theme(legend.position = "right")
+```
+```{r,results='markup',warning=FALSE}
+ggplot(covid_cum,aes(x=state,y=deaths,color=state))+geom_point()+ggtitle("Deaths from Coronavirus until 07/18/2020 in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+plot_usmap(data = covid_cum, labels=TRUE, values = "deaths", color = "red") +
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Deaths from Coronavirus from 05/01/2020 to 07/18/2020 in US", label = scales::comma
+  ) + theme(legend.position = "right")
+```
 
-
-
+```{r,echo=FALSE,warning=FALSE}
+ggplot(covid_cum,aes(x=state,y=population,color=state))+geom_point()+ggtitle("Population of each state in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+plot_usmap(data=covid_cum, labels=TRUE, values="population",color="green")+
+  scale_fill_continuous(
+    low = "white", high = "green", name = "Population of each state in US", label = scales::comma
+  ) + theme(legend.position = "right")
                                       
+```{r,echo=FALSE,warning=FALSE}
+plot_usmap(data=covid, labels=TRUE, values="party",color="red")
+```
                                       
+```{r,results='markup',warning=FALSE}
+ggplot(covid_cum,aes(x=state,y=tests,color=state))+geom_point()+ggtitle("Number of tests of each state in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+plot_usmap(data=covid_cum, labels=TRUE, values="tests",color="orange")+
+  scale_fill_continuous(
+    low = "white", high = "orange", name = "Number of tests of each state in US", label = scales::comma
+  ) + theme(legend.position = "right")
+```
+
+```{r,results='markup',warning=FALSE}
+ggplot(covid_cum,aes(x=state,y=hospitalized,color=state))+geom_point()+ggtitle("Hospitalization in each states")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+```
                                       
+```{r,results='markup',warning=FALSE}
+covidny=subset(covid,state=="NY")
+df1=covidny %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df1$date=as.Date(df1$date,format = "%m/%d/%y")
+ggplot(df1, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in NY")
+```
+
+```{r,results='markup',warning=FALSE}
+covidtx=subset(covid,state=="TX")
+df2=covidtx %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df2$date=as.Date(df2$date,format = "%m/%d/%y")
+ggplot(df2, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in TX")
+```
+```{r,results='markup',warning=FALSE}
+covidfl=subset(covid,state=="FL")
+df3=covidfl %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df3$date=as.Date(df3$date,format = "%m/%d/%y")
+ggplot(df3, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in FL")
+```
+
+```{r,results='markup',warning=FALSE}
+covidca=subset(covid,state=="CA")
+df4=covidca %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df4$date=as.Date(df4$date,format = "%m/%d/%y")
+ggplot(df4, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in CA")
+```
+                                      
+```{r,results='markup',warning=FALSE}
+covidil=subset(covid,state=="IL")
+df5=covidil %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df5$date=as.Date(df5$date,format = "%m/%d/%y")
+ggplot(df5, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in IL")
+```
+
+```{r,results='markup',warning=FALSE}
+covidnj=subset(covid,state=="NJ")
+df6=covidnj %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df6$date=as.Date(df6$date,format = "%m/%d/%y")
+ggplot(df6, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in NJ")
+```
+
+```{r,results='markup',warning=FALSE}
+covidga=subset(covid,state=="GA")
+df7=covidga %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df7$date=as.Date(df7$date,format = "%m/%d/%y")
+ggplot(df7, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in GA")
+```
+
+```{r,results='markup',warning=FALSE}
+covidaz=subset(covid,state=="AZ")
+df8=covidaz %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df8$date=as.Date(df8$date,format = "%m/%d/%y")
+ggplot(df8, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in AZ")
+```
 
                                       
 ##Code for Ngodoo's Analysis
