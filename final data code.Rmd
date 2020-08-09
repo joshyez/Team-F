@@ -56,7 +56,7 @@ This report is organized as follows:
 *In this section, the focus will be on the relationship between political party affiliation and the average change in Covid-19 cases, from May 1, 2020 to July 18, 2020.  The average change in cases is per 1,000 people to better visualize how the number of cases has changed over time and to make the states more comparable. Figures 1 and 2 below will be used to visually evaluate the data for potential relationships or patterns between the average change in cases and political party affiliation.*
 
 ```{r, echo=FALSE}
-ggplot(data_by_state, aes(x=Party, y=Avg_change, fill = Party, na.action())) + 
+ggplot(data_by_state, aes(x=Party, y=avg_change, fill = Party, na.action())) + 
   geom_boxplot() + scale_fill_manual(values = c("blue", "red")) +labs(title="Plot of Avg change in Cases \n by Party",
         x ="Political Party", y = "Avg Change in Covid-19 Cases (per 1,000)") + theme( plot.title = element_text(hjust = 0.5,  size=14, face="bold")) 
 ```
@@ -66,7 +66,7 @@ ggplot(data_by_state, aes(x=Party, y=Avg_change, fill = Party, na.action())) +
 *The boxplot in figure 1, shows that republican states have experienced a greater increase in Covid-19 cases than democratic states, on average. It is important to note that the variation in republican states is also greater. Not only is the mean higher for this group, but it also appears to have more states that have experienced a greater increase in cases. This is most likely what is causing the larger variation.*
 
 ```{r, echo=FALSE}
-ggplot(data=data_by_state, aes(x=reorder(State, -Avg_change), y=Avg_change, fill=Party)) + ggtitle("Avg Change in Covid-19 Cases \n by State and Political Affiliation") +
+ggplot(data=data_by_state, aes(x=reorder(State, -avg_change), y=avg_change, fill=Party)) + ggtitle("Avg Change in Covid-19 Cases \n by State and Political Affiliation") +
   xlab("State") + ylab("Avg Change in Cases (per 1,000)") +
   geom_bar(stat="identity") + scale_fill_manual(values = c("blue", "red")) + theme(axis.text.x=element_text(angle=90, hjust=1), plot.title = element_text(hjust = 0.5,  size=14, face="bold"))
 ```
@@ -90,15 +90,15 @@ Each state can only be affiliated with one political party. Therefore, the two s
 2.Normality:
 
 ```{r, echo=FALSE}
-qqnorm(data_by_state$Avg_change)
+qqnorm(data_by_state$avg_change)
 ```
 
 *Figure 3: Normal Q-Q Plot*
 *From the visual check in Figure 3, the QQ-plot appears to be normal. Now, the Shapiro-Wilke test will be used to confirm:*
 
 ```{r, echo=FALSE}
-with(data_by_state, shapiro.test(Avg_change[Party == "rep"]))# p = 0.8837
-with(data_by_state, shapiro.test(Avg_change[Party == "dem"])) # p = 0.9927
+with(data_by_state, shapiro.test(avg_change[Party == "rep"]))# p = 0.8837
+with(data_by_state, shapiro.test(avg_change[Party == "dem"])) # p = 0.9927
 ```
 
 *Figure 4: Shapiro-Wilk Normality Test*
@@ -107,7 +107,7 @@ with(data_by_state, shapiro.test(Avg_change[Party == "dem"])) # p = 0.9927
 *As a result of all the necessary assumptions being met, the use of the Welch two-sample t-test has been justified and we can continue with the analysis.*
 
 ```{r, echo=FALSE}
-results <- t.test(Avg_change~Party, data = data_by_state, alternative = "less")
+results <- t.test(avg_change~Party, data = data_by_state, alternative = "less")
 results
 ```
 
