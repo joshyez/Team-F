@@ -48,7 +48,7 @@ This report is organized as follows:
 3.1 Multiple Linear Regression Model
 3.2 Two Sample T-Test
 3.3 Linear Regression 
-3.4 Anova 
+3.4 Additional Analysis including anova, log and Poisson 
 4. Conclusion
 5. Citations
 
@@ -358,7 +358,87 @@ confint(dem_lm)
 ```
 *To test if this difference was significant, we ran a confidence interval for each set of data (Figure 12-13). As the intervals lie just outside of each other, we can conclude with 95% confidence that the deaths and cases for each party are different.* 
 
-##3.4 ANOVA
+##3.4 Additional Analysis including ANOVA, log and Poisson 
+```{r}
+ggplot(data)+
+  geom_point(aes(x = Democratic.advantage, y = ConfirmedRate))
+ggplot(data)+
+  geom_boxplot(aes(x = Classification, y = ConfirmedRate))
+```
+
+Before buliding models, we use plots to analyze the relationships among the major variables. We find that there is no clear relationship between democratic advantage and COVID-19 confirmed rate, but we do realize that, according to the boxplots, in states where Democratic and Republican are competitive, COVID-19 confirmed rates are slightly less than in other states. 
+
+```{r}
+data <- data %>%
+  mutate(Inclination = ifelse(Democratic.advantage > 0, "Democratic",
+                             ifelse(Democratic.advantage == 0, "Competitive", "Republican")))
+ggplot(data)+
+  geom_boxplot(aes(x = Inclination, y = ConfirmedRate))
+```
+
+To further justify that finding, we formulate a new variable called Inclination, which tells whether the democratic advantage is positive, negative, or strictly zero. In these new boxplots, we can see that competitive states have overall less confirmed rate than the other two groups, while the republican states have overall the most confirmed rate. 
+
+```{r}
+model1 <- lm(ConfirmedRate ~ Democratic.advantage, data = data)
+summary(model1)
+```
+
+In Model1, we build a simple linear model that tells the relationship between the confirm rate (the number of confirmed COVID-19 case divided by population) and the Democratic advantage in vote. However, there is no significant correlation in these two variables. But we couldn't deny that there might be some relationship between these two variables after taking natural log of the confirmed rate. 
+
+```{r}
+data <- data %>%
+  mutate(logCR = log(ConfirmedRate),
+         logC = log(Confirmed))
+
+ggplot(aes(x = Democratic.advantage, y = logCR), data = data)+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  theme_classic()+
+  labs(x = "Democratic Advantage (%)",
+       y = "Logged confirmed rate")
+
+ggplot(aes(x = Democratic.advantage, y = logC), data = data)+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE, color = "red")+
+  theme_classic()+
+  labs(x = "Democratic Advantage (%)",
+       y = "Logged number of confirmed case")
+```
+
+In the logged confirmed rate vs. Democratic advantage plot, the regression line has a positive slope, although the slope is not significant. In the logged number of confirmed case vs. Democratic advantage plot, we can observe a more significant slope that suggests a clear positive linear relationship between the logged number of confirmed case and Democratic advantage.
+
+
+```{r}
+model2 <- glm(Confirmed ~ Population + 
+                Democratic.advantage, 
+              family = "poisson", data = data)
+summary(model2)
+```
+
+Since the number of confirmed COVID-19 case can be treated as count in a period of time (from Jan. 22nd to July 18th), we formulate a Possion model (Model2) having the number of confirmed case as its response variable, with population and democratic advatage as its explanatory variables. As we can see, each of the two variables are significant in 5% significance level. Also, there is no overdispersion in this model. 
+
+```{r}
+model3 <- glm(Confirmed ~ Population + Democratic.advantage + 
+                Classification, family = "poisson", data = data)
+summary(model3)
+```
+
+Based on Model2, we take the classification of Democratic inclination into consideration. It turns out that each level of classification is significant as an indicator variable.
+
+```{r}
+anova(model2, model3)
+```
+
+By running an ANOVA test, we know that Model3 is better than Model2 as it has less residual deviation.
+
+```{r}
+model4 <- glm(Confirmed ~ Population + Democratic.advantage + 
+                Classification + Democratic.advantage:Classification, 
+              family = "poisson", data = data)
+anova(model3,model4)
+```
+
+Further, we add a correlated variable (Model4) to capture the relationship between the classification of Democratic inclination and the Democratic advantage in vote of each state. According to the ANOVA test, Model4 is the best model among all models we've built so far.
 
 #4. Conclusion
 
