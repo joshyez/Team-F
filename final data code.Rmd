@@ -49,7 +49,196 @@ This report is organized as follows:
 
 ##2.3 Geographical Description of the Data 
 
+The graph below shows an overall trend of confirmed covid-19 cases and deaths from 05/01/2020 to 07/18/2020 in the US. The top of each vertical line represents the highest number of cases or deaths in a state at the time period. We can see the daily confirmed cases and deaths are increasing continuously. And from another graph we can see tests and recoveries are increasing obviously.
+```{r,echo=FALSE,message = FALSE}
+loadPkg("tidyr")
+loadPkg("usmap")
+loadPkg("readr")
+loadPkg("ggplot2")
+loadPkg("dplyr")
+loadPkg("scales")
+covid=read.csv("state_data_add.csv")
+str(covid)
+ks=function (x) { number_format(accuracy = 1,
+                                   scale = 1/1000,
+                                   suffix = "k",
+                                   big.mark = ",")(x) }
+df=covid %>%
+  select(date,cases,deaths) %>%
+  gather(key = "variable", value = "value", -date)
+df$date=as.Date(df$date,format = "%m/%d/%y")
+ggplot(df, aes(x = date, y = value)) + 
+  geom_area(aes(color = variable,fill = variable), 
+            alpha = 0.5, position = position_dodge(0.8))+ggtitle("Covid-19 data from 05/01/2020 to 07/18/2020 in US")+scale_color_manual(values = c("blue","red")) +scale_fill_manual(values = c("blue","red"))+scale_y_continuous(labels = ks)
+```
+
+```{r,results='markup'}
+dfa=covid %>%
+  select(date,cases,deaths,hospitalized,recovered,tests) %>%
+  gather(key = "variable", value = "value", -date)
+dfa$date=as.Date(dfa$date,format = "%m/%d/%y")
+ggplot(dfa, aes(x = date, y = value)) + 
+  geom_area(aes(color = variable,fill = variable), 
+            alpha = 0.5, position = position_dodge(0.8))+ggtitle("Covid-19 data from 05/01/2020 to 07/18/2020 in US")+scale_color_manual(values = c("blue","red","green","black","orange")) +scale_fill_manual(values = c("blue","red","green","black","orange"))+scale_y_continuous(labels = ks)
+```
+
+
+The graph of "confirmed cases in the US until 07/18/2020" shows that New York, California, Florida, and Texas are the top four states that have the most positive cases. New York has passed 400k confirmed Covid-19 cases until 07/18/2020. California, Florida, and Texas are between 300k to 400k cases. Other states are below 200k. 
+```{r,,results='markup',warning=FALSE}
+covid_cum=subset(covid,date=="7/18/20")
+ggplot(covid_cum,aes(x=state,y=cases,color=state))+geom_point()+ggtitle("Confirmed Coronavirus Cases until 07/18/2020 in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+plot_usmap(data = covid_cum, labels=TRUE, values = "cases", color = "red") + 
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Confirmed Coronavirus Cases until 07/18/2020 in US", label = scales::comma
+  ) + theme(legend.position = "right")
+```
+
+
+The graph of "deaths in the US until 07/18/2020" shows that New York has most deaths.  More than 30k people are dead in New York and around 15k people are dead in New Jersey until 07/18/2020. Other states are below 10k. But this only can represent the result in this time period, New York has more people infected earlier, so they may have more people dead earlier. 
+```{r,results='markup',warning=FALSE}
+ggplot(covid_cum,aes(x=state,y=deaths,color=state))+geom_point()+ggtitle("Deaths from Coronavirus until 07/18/2020 in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+plot_usmap(data = covid_cum, labels=TRUE, values = "deaths", color = "red") +
+  scale_fill_continuous(
+    low = "white", high = "red", name = "Deaths from Coronavirus from 05/01/2020 to 07/18/2020 in US", label = scales::comma
+  ) + theme(legend.position = "right")
+```
+
+
+The heat map of the US population shows that California, Texas, Florida, and New York are the four states that have the most population. They are also the four states that have the most confirmed cases. 
+```{r,echo=FALSE,warning=FALSE}
+ggplot(covid_cum,aes(x=state,y=population,color=state))+geom_point()+ggtitle("Population of each state in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+plot_usmap(data=covid_cum, labels=TRUE, values="population",color="green")+
+  scale_fill_continuous(
+    low = "white", high = "green", name = "Population of each state in US", label = scales::comma
+  ) + theme(legend.position = "right")
+```
+
+
+The heat map below shows the parties of each state based on the 2018 data. We can see that two of the states that have the most confirmed cases and most population, which is New York and California, are demoncratic states. And two of the states that have the most confirmed cases and most populated, which is Florida and Texas, are republican states. So we will have some analysis based on these four states.
+```{r,echo=FALSE,warning=FALSE}
+plot_usmap(data=covid, labels=TRUE, values="party",color="red")
+```
+
+
+The graph of the number of tests shows that California has more than 6 million tests until 7/18/2020 and New York has around 5 million tests. The republican states, Florida and Texas, are below them and have around 3 million tests. Until 7/18, the two republican states have tests much below the two democratic states, they may have more tests in the future, but they have much more people who have not tested until 7/18. 
+```{r,results='markup',warning=FALSE}
+ggplot(covid_cum,aes(x=state,y=tests,color=state))+geom_point()+ggtitle("Number of tests of each state in US")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+plot_usmap(data=covid_cum, labels=TRUE, values="tests",color="orange")+
+  scale_fill_continuous(
+    low = "white", high = "orange", name = "Number of tests of each state in US", label = scales::comma
+  ) + theme(legend.position = "right")
+```
+
+
+The graph of cumulative hospitalization until 7/18 shows that New York is the state that has the most people hospitalized. Because California and Texas are missing data, I will compare the two states that have the most confirmed cases, New York and Florida. Whereas democratic state New York has more than 75k people are hospitalized, republican state Florida has below 25k people are hospitalized.  
+```{r,results='markup',warning=FALSE}
+ggplot(covid_cum,aes(x=state,y=hospitalized,color=state))+geom_point()+ggtitle("Hospitalization in each states")+geom_text(aes(label=state))+scale_y_continuous(labels = ks)
+```
+
+
 #3. Analysis
+
+##3.1 Plot Analysis
+
+In order to better compare the two republican states and democratic states, the line plots below are generated. We can see the lines of confirmed cases in Republican states Florida and Texas are going up more sharply than democratic states New York and California. They may have more chances to increase cases greatly in the future. And although the two republican states have the number of tests much lower than the two democratic states, they don’t show a sign that they will have many more people get tested in the future. 
+
+```{r,results='markup',warning=FALSE}
+covidny=subset(covid,state=="NY")
+df1=covidny %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df1$date=as.Date(df1$date,format = "%m/%d/%y")
+ggplot(df1, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in NY")
+```
+
+```{r,results='markup',warning=FALSE}
+covidtx=subset(covid,state=="TX")
+df2=covidtx %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df2$date=as.Date(df2$date,format = "%m/%d/%y")
+ggplot(df2, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in TX")
+```
+```{r,results='markup',warning=FALSE}
+covidfl=subset(covid,state=="FL")
+df3=covidfl %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df3$date=as.Date(df3$date,format = "%m/%d/%y")
+ggplot(df3, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in FL")
+```
+
+```{r,results='markup',warning=FALSE}
+covidca=subset(covid,state=="CA")
+df4=covidca %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df4$date=as.Date(df4$date,format = "%m/%d/%y")
+ggplot(df4, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in CA")
+```
+
+
+The data in the four states may not be enough to show that some democratic states are doing better than republican states. Since demoncratic states New Jersey and Illinois are the fifth and sixth states that have the most confirmed cases, republican states Georgia and Arizona are the seventh and eighth states that have the most cases, we picked these four states to generate another analysis. The lines of confirmed cases in the demoncratic states New Jersey and Illinois are much more stable than republican states Georgia and Arizona. Georgia and Arizona are more possible to increase confirmed cases largely in the future. And Georgia and Arizona are also  conducted tests lower than New Jersey and Illinois. Moreover, New Jersey has more people hospitalized than Georgia and Arizona. By comparing the eight states, we can see some demoncratic states control the increasing cases better than some republican states.
+```{r,results='markup',warning=FALSE}
+covidil=subset(covid,state=="IL")
+df5=covidil %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df5$date=as.Date(df5$date,format = "%m/%d/%y")
+ggplot(df5, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in IL")
+```
+
+```{r,results='markup',warning=FALSE}
+covidnj=subset(covid,state=="NJ")
+df6=covidnj %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df6$date=as.Date(df6$date,format = "%m/%d/%y")
+ggplot(df6, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in NJ")
+```
+
+```{r,results='markup',warning=FALSE}
+covidga=subset(covid,state=="GA")
+df7=covidga %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df7$date=as.Date(df7$date,format = "%m/%d/%y")
+ggplot(df7, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in GA")
+```
+
+```{r,results='markup',warning=FALSE}
+covidaz=subset(covid,state=="AZ")
+df8=covidaz %>%
+  select(date,cases, deaths,hospitalized,tests,recovered) %>%
+  gather(key = "variable", value = "value", -date)
+df8$date=as.Date(df8$date,format = "%m/%d/%y")
+ggplot(df8, aes(x = date, y = value)) + 
+  geom_line(aes(color = variable), size = 1) +
+  scale_color_manual(values = c("blue", "red","green","yellow","orange")) +
+  theme_minimal()+scale_y_continuous(labels = ks)+ggtitle("Covid-19 data in AZ")
+```
+
 
 ##3.2 Two Sample T-Test
 
