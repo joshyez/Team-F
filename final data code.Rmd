@@ -403,7 +403,7 @@ ggplot(data)+
   geom_boxplot(aes(x = Classification, y = ConfirmedRate))
 ```
 
-Before buliding models, we use plots to analyze the relationships among the major variables. We find that there is no clear relationship between democratic advantage and COVID-19 confirmed rate, but we do realize that, according to the boxplots, in states where Democratic and Republican are competitive, COVID-19 confirmed rates are slightly less than in other states. 
+*Before buliding models, we use plots to analyze the relationships among the major variables. We find that there is no clear relationship between democratic advantage and COVID-19 confirmed rate, but we do realize that, according to the boxplots, in states where Democratic and Republican are competitive, COVID-19 confirmed rates are slightly less than in other states.* 
 
 ```{r}
 data <- data %>%
@@ -413,14 +413,14 @@ ggplot(data)+
   geom_boxplot(aes(x = Inclination, y = ConfirmedRate))
 ```
 
-To further justify that finding, we formulate a new variable called Inclination, which tells whether the democratic advantage is positive, negative, or strictly zero. In these new boxplots, we can see that competitive states have overall less confirmed rate than the other two groups, while the republican states have overall the most confirmed rate. 
+*To further justify that finding, we formulate a new variable called Inclination, which tells whether the democratic advantage is positive, negative, or strictly zero. In these new boxplots, we can see that competitive states have overall less confirmed rate than the other two groups, while the republican states have overall the most confirmed rate.* 
 
 ```{r}
 model1 <- lm(ConfirmedRate ~ Democratic.advantage, data = data)
 summary(model1)
 ```
 
-In Model1, we build a simple linear model that tells the relationship between the confirm rate (the number of confirmed COVID-19 case divided by population) and the Democratic advantage in vote. However, there is no significant correlation in these two variables. But we couldn't deny that there might be some relationship between these two variables after taking natural log of the confirmed rate. 
+*In Model1, we build a simple linear model that tells the relationship between the confirm rate (the number of confirmed COVID-19 case divided by population) and the Democratic advantage in vote. However, there is no significant correlation in these two variables. But we couldn't deny that there might be some relationship between these two variables after taking natural log of the confirmed rate.* 
 
 ```{r}
 data <- data %>%
@@ -442,7 +442,7 @@ ggplot(aes(x = Democratic.advantage, y = logC), data = data)+
        y = "Logged number of confirmed case")
 ```
 
-In the logged confirmed rate vs. Democratic advantage plot, the regression line has a positive slope, although the slope is not significant. In the logged number of confirmed case vs. Democratic advantage plot, we can observe a more significant slope that suggests a clear positive linear relationship between the logged number of confirmed case and Democratic advantage.
+*In the logged confirmed rate vs. Democratic advantage plot, the regression line has a positive slope, although the slope is not significant. In the logged number of confirmed case vs. Democratic advantage plot, we can observe a more significant slope that suggests a clear positive linear relationship between the logged number of confirmed case and Democratic advantage.*
 
 
 ```{r}
@@ -452,7 +452,7 @@ model2 <- glm(Confirmed ~ Population +
 summary(model2)
 ```
 
-Since the number of confirmed COVID-19 case can be treated as count in a period of time (from Jan. 22nd to July 18th), we formulate a Possion model (Model2) having the number of confirmed case as its response variable, with population and democratic advatage as its explanatory variables. As we can see, each of the two variables are significant in 5% significance level. Also, there is no overdispersion in this model. 
+*Since the number of confirmed COVID-19 case can be treated as count in a period of time (from Jan. 22nd to July 18th), we formulate a Possion model (Model2) having the number of confirmed case as its response variable, with population and democratic advatage as its explanatory variables. As we can see, each of the two variables are significant in 5% significance level. Also, there is no overdispersion in this model.* 
 
 ```{r}
 model3 <- glm(Confirmed ~ Population + Democratic.advantage + 
@@ -460,13 +460,13 @@ model3 <- glm(Confirmed ~ Population + Democratic.advantage +
 summary(model3)
 ```
 
-Based on Model2, we take the classification of Democratic inclination into consideration. It turns out that each level of classification is significant as an indicator variable.
+*Based on Model2, we take the classification of Democratic inclination into consideration. It turns out that each level of classification is significant as an indicator variable.*
 
 ```{r}
 anova(model2, model3)
 ```
 
-By running an ANOVA test, we know that Model3 is better than Model2 as it has less residual deviation.
+*By running an ANOVA test, we know that Model3 is better than Model2 as it has less residual deviation.*
 
 ```{r}
 model4 <- glm(Confirmed ~ Population + Democratic.advantage + 
@@ -475,9 +475,14 @@ model4 <- glm(Confirmed ~ Population + Democratic.advantage +
 anova(model3,model4)
 ```
 
-Further, we add a correlated variable (Model4) to capture the relationship between the classification of Democratic inclination and the Democratic advantage in vote of each state. According to the ANOVA test, Model4 is the best model among all models we've built so far.
+*Further, we add a correlated variable (Model4) to capture the relationship between the classification of Democratic inclination and the Democratic advantage in vote of each state. According to the ANOVA test, Model4 is the best model among all models we've built so far.*
 
 #4. Conclusion
+    *From our analysis, it is clear that democratic states have a higher number of cases than republican states. However, by comparing some graphs of democratic states and republican states, some democratic states are showing more constant increase of confirmed cases, having more tests, and having more people hospitalized from May 1st to July 18. This is an indication that democratic states are working towards exposing and stabilizing the number of cases.*
+*When we account for differences in population, our analysis shows that republican states have a higher average increase in covid-19 cases. However, the t-test results indicate that there is not enough evidence to reject the null hypothesis. Therefore, the average change in covid-19 cases between republican and democratic states are not significantly different.* 
+*In terms of the relationship between COVID deaths and cases, the analysis of linear dependence between democratic and republican states showed that a linear relationship is present. Democratic states have a steeper rate of deaths and cases compared to republican states.* 
+
+	*Overall, the results from our analysis were able to answer our question on whether republican states have fared worse  during the coronavirus pandemic. While democratic states' responses may be more effective at controlling the number of cases, they have experienced poorer outcomes. This data may need to be re-analyzed in the upcoming months to factor in updated numbers of cases and deaths to more accurately capture the effect of early opening states. We must also consider a wide variety of other factors at play that may affect this analysis, such as the status of general public health in a population, ethnicity,education level, or the influence of travelers.* 
 
 #5. Citations 
 1.US Coronavirus Cases and Deaths. (2020, August 8). Retrieved from https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/
