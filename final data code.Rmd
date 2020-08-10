@@ -429,6 +429,54 @@ confint(dem_lm)
 *To test if this difference was significant, we ran a confidence interval for each set of data (Figure 12-13). As the intervals lie just outside of each other, we can conclude with 95% confidence that the deaths and cases for each party are different.* 
 
 ##3.4 Additional Analysis including ANOVA, log and Poisson 
+```{r, include = FALSE}
+library(dplyr)
+library(ggplot2)
+confirmed <- read.csv("~/covid_confirmed_usafacts.csv")
+vote <- read.csv("~/voteinfo.csv")
+population <- read.csv("~/covid_county_population_usafacts.csv")
+deaths <- read.csv("~/covid_deaths_usafacts.csv")
+states <- read.csv("~/states.csv")
+```
+
+```{r, warning= FALSE}
+deaths <- deaths %>%
+  mutate(Death =  X7.18.2020)
+
+deaths <- deaths %>%
+  group_by(State) %>%
+  summarise(Death = sum(Death))
+
+confirmed <- confirmed %>%
+  mutate(Confirmed = X7.18.2020)
+
+confirmed <- confirmed %>%
+  group_by(State) %>%
+  summarise(Confirmed = sum(Confirmed))
+
+data <- left_join(deaths,confirmed, by = c("State"))
+
+vote$Name <- vote$States 
+vote <- left_join(vote, states, by = c("Name"))
+vote$Vote <- vote$N
+vote$Democratic.advantage <- vote$Democratic.advantage*0.01
+vote <- vote %>%
+  select(State, Vote, Classification, Democratic.advantage)
+
+data <- left_join(data, vote, by = c("State"))
+
+population <- population %>%
+  group_by(State) %>%
+  summarise(Population = sum(population))
+
+data <- left_join(data, population, by = c("State"))
+data$ConfirmedRate <- data$Confirmed/data$Population
+data$DeathRate <- data$Death/data$Confirmed
+data$Vote <- as.numeric(data$Vote)
+data = data[!data$State == "DC",]
+colnames(data)
+```
+
 ```{r}
 ggplot(data)+
   geom_point(aes(x = Democratic.advantage, y = ConfirmedRate))
