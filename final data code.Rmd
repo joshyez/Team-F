@@ -316,8 +316,9 @@ ggplot(df8, aes(x = date, y = value)) +
 *In this section, the focus will be on the relationship between political party affiliation and the average change in Covid-19 cases, from May 1, 2020 to July 18, 2020.  The average change in cases is per 1,000 people to better visualize how the number of cases has changed over time and to make the states more comparable. Figures 1 and 2 below will be used to visually evaluate the data for potential relationships or patterns between the average change in cases and political party affiliation.*
 
 ```{r, echo=FALSE}
-ggplot(data_by_state, aes(x=Party, y=avg_change, fill = Party, na.action())) + 
-  geom_boxplot() + scale_fill_manual(values = c("blue", "red")) +labs(title="Plot of Avg change in Cases \n by Party",
+#boxplot
+ ggplot(data_by_state, aes(x=Party, y=avg_change, fill = Party, na.action())) + 
+  geom_boxplot() + scale_fill_manual(values = c("red", "blue")) +labs(title="Plot of Avg change in Cases \n by Party",
         x ="Political Party", y = "Avg Change in Covid-19 Cases (per 1,000)") + theme( plot.title = element_text(hjust = 0.5,  size=14, face="bold")) 
 ```
 
@@ -328,7 +329,8 @@ ggplot(data_by_state, aes(x=Party, y=avg_change, fill = Party, na.action())) +
 ```{r, echo=FALSE}
 ggplot(data=data_by_state, aes(x=reorder(State, -avg_change), y=avg_change, fill=Party)) + ggtitle("Avg Change in Covid-19 Cases \n by State and Political Affiliation") +
   xlab("State") + ylab("Avg Change in Cases (per 1,000)") +
-  geom_bar(stat="identity") + scale_fill_manual(values = c("blue", "red")) + theme(axis.text.x=element_text(angle=90, hjust=1), plot.title = element_text(hjust = 0.5,  size=14, face="bold"))
+  geom_bar(stat="identity") + scale_fill_manual(values = c("red", "blue")) + theme(axis.text.x=element_text(angle=90, hjust=1), plot.title = element_text(hjust = 0.5,  size=14, face="bold"))
+
 ```
 
 *Figure 2: Bar graph of the average change in cases by state and political affiliation*
@@ -357,8 +359,9 @@ qqnorm(data_by_state$avg_change)
 *From the visual check in Figure 3, the QQ-plot appears to be normal. Now, the Shapiro-Wilke test will be used to confirm:*
 
 ```{r, echo=FALSE}
-with(data_by_state, shapiro.test(avg_change[Party == "rep"]))# p = 0.8837
-with(data_by_state, shapiro.test(avg_change[Party == "dem"])) # p = 0.9927
+with(data_by_state, shapiro.test(avg_change[Party == "Republican"]))# p = 0.8837
+with(data_by_state, shapiro.test(avg_change[Party == "Democratic"])) # p = 0.9927
+
 ```
 
 *Figure 4: Shapiro-Wilk Normality Test*
@@ -373,7 +376,7 @@ results
 
 *Figure 5: Welch Two Sample T-Test (One Sided Test))*
 
-*After conducting the t-test, the results show that the p-value = 0.059, which is greater than 0.05. This implies the failure to reject the null hypothesis that the means are equal. Therefore, we can conclude that between May 1, 2020 and July 18, 2020, the average change in Covid-19 cases was not significantly higher for republican states, compared to democratic states.*
+*After conducting the t-test, the results show that the p-value = 0.9408, which is greater than 0.05. This implies the failure to reject the null hypothesis that the means are equal. Therefore, we can conclude that between May 1, 2020 and July 18, 2020, the average change in Covid-19 cases was not significantly higher for republican states, compared to democratic states.*
 
 
 ##3.3 Linear Regression 
