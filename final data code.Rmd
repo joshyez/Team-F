@@ -66,7 +66,12 @@ data_by_state <- read.csv("data_by_state.csv")
 ```
 
 #1. Introduction
+*The coronavirus death toll has surpassed 159,000 and almost 5 million positive cases have been confirmed in the United States since its outbreak, causing the United states to have the most COVID-19 cases and deaths in the world.*
+*President Trump and senior administration officials have been criticized for their response to the outbreak, largely due to slow implementation of testing, spread of health related mis-information and premature re-opening of states.* 
+*However, Republicans and Democrats may view the situation differently. Recently, we have begun to see red states in the south opening early and having an exponential increase of cases, while many blue states in the northeast have maintained more cautious protocols. Furthermore, Republicans are reportedly more comfortable visiting salons, restaurants, indoor events and have shown a decreased concern of catching the virus since its outbreak. Democrats are almost twice as likely to say masks should be worn at all times and say actions of ordinary Americans affect the spread of corona.2 We begin to question how a population's political affiliation affects its pandemic response.*
 
+**Smart Question:**
+*Do Republican states have an increased rate of COVID infection?*
 
 ##1.1 Index
 This report is organized as follows: 
@@ -87,12 +92,36 @@ This report is organized as follows:
 #2. Description of the Data 
 ##2.1 Source Data
 
+*USA Facts collects COVID-19 data in aggregate from the Centers for Disease Control (CDC), state- and local-level public health agencies.1 From this source, we are using a dataset that reports COVID-related deaths and a dataset that reports confirmed COVID- cases , accounted daily, by county, since January 22, 2020 to July 18, 2020. Both of these datasets have 3,195 observations across 183 variables. We selected the data from May 1st to July 18 to perform the analysis. Because we intend to focus on the time period when coronavirus has outbreak in all states and many state governors have announced policies to respond to the Covid-19. Covid-19 deaths passed 100,000 on May 27, and large protests happened on May 31 and  June are also the reason that we chose May 1st to July 18 as the time period of our analysis.* 
+*We also collected Covid-19 tests, recoveries, and hospitalization data of each state in  the website covidtracking. We want to compare the tests and hospitalization rate in each state.* 
+*We are using a dataset from the 2018 Midterm elections to determine states political affiliation with 51 observations across 8 variables.3 The 2018 Midterm election was one of the most recent important elections, which is why we chose to use this data. Election data is provided by Gallup, a prominent independent political analysis company.* 
+
+```{r}
+str(covid)
+str(data_by_state)
+```
 ##2.2 Variables
 
 ```{r,results='markup'}
 covid=read.csv("state_data_add.csv")
 xkablesummary(covid)
 ```
+**State**- The 50 states of the United States, plus the District of Columbia.
+**Date**- Time period from 5/01/2020 to 7/18/2020
+**Cases**- The number of Covid-19 confirmed cases per day
+**Deaths**- The number of Covid-19 related deaths per day
+**Hospitalized**- The cumulative hospitalized people in each state
+**Tests**- The number of tests per day in each state
+**Recovered**- The number of recovered cases in each state per day
+**Party**- Political party affiliation (Democrat or Republican), based on 2018 midterm elections  
+**Change_cases**- The daily change in the number of Covid-19 cases
+**Pct_cases**- The daily percentage change in the number of Covid-19 cases
+**Avg_change**- The average change in Covid-19 cases per 1,000 people, for each state (over the period 5/1 /2020 – 7/18/2020)
+**State_pop**- Total population per state
+**Cases.per.thou**- Total number of cases per thousand people of the states population
+**Deaths.per.thou**- Total number of deaths per thousand people of the states population
+**Population.per.thou**- Total number of people per thousand of the states population
+
 
 ##2.3 Geographical Description of the Data 
 
@@ -232,6 +261,7 @@ ggplot(df4, aes(x = date, y = value)) +
 
 
 *The data in the four states may not be enough to show that some democratic states are doing better than republican states. Since demoncratic states New Jersey and Illinois are the fifth and sixth states that have the most confirmed cases, republican states Georgia and Arizona are the seventh and eighth states that have the most cases, we picked these four states to generate another analysis. The lines of confirmed cases in the demoncratic states New Jersey and Illinois are much more stable than republican states Georgia and Arizona. Georgia and Arizona are more possible to increase confirmed cases largely in the future. And Georgia and Arizona are also  conducted tests lower than New Jersey and Illinois. Moreover, New Jersey has more people hospitalized than Georgia and Arizona. By comparing the eight states, we can see some demoncratic states have some aspects doing better than some republican states, like having more stable increasing cases, more tests, more people hospitalized. But this result only applies to this short time period.*
+
 ```{r,results='markup',warning=FALSE}
 covidil=subset(covid,state=="IL")
 df5=covidil %>%
